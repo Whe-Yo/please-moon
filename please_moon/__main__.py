@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sys
 
-from .sources import SECEdgar
+from .sources import SECEdgar, YahooChart
 from .report import fact_sheet
 
 
@@ -21,6 +21,13 @@ def main(argv: list[str]) -> int:
     except Exception as e:  # noqa: BLE001
         print(f"오류: {e}", file=sys.stderr)
         return 1
+    # 시세 보강 (Yahoo 비공식, 무키, best-effort — 실패해도 재무 사실은 출력)
+    try:
+        price = YahooChart().latest_price(ticker)
+        if price:
+            data["facts"].insert(0, price)
+    except Exception:  # noqa: BLE001
+        pass
     print(fact_sheet(data))
     return 0
 

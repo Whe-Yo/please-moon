@@ -31,7 +31,8 @@
 
 ## ⚠️ 검증된 정정 (시점민감)
 - **IEX Cloud = 2024-08-31 폐지.** 쓰지 말 것.
-- **Yahoo 공식 API 폐지** → yfinance 비공식은 불안정.
+- **Yahoo 공식 API 폐지** → yfinance 비공식은 불안정. (단 `query1.finance.yahoo.com/v8/finance/chart` 무키 엔드포인트는 현재 동작 — 비공식이라 v0.1 시세 보강에만.)
+- **Stooq CSV 차단됨**(검증): `/q/l/`·`/q/d/l/`이 JS proof-of-work 챌린지로 막혀 단순 HTTP 불가.
 - **Alpha Vantage 무료 = 25콜/일** (대폭 축소).
 - 2026년 "완벽한 무료 글로벌 API는 없음" — 신뢰 글로벌 프로덕션은 결국 저가 유료(EODHD/Twelve Data/Polygon 유료).
 
