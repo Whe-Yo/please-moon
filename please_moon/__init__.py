@@ -5,5 +5,5 @@
 from .sources import SECEdgar, Tier, Fact
 from .report import fact_sheet, DISCLAIMER
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = ["SECEdgar", "Tier", "Fact", "fact_sheet", "DISCLAIMER"]

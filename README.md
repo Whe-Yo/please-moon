@@ -19,11 +19,12 @@
 **데이터 수집 = 결정론적 코드 / 분석·종합 = clemini(LLM).** 설계: [docs/architecture.md](docs/architecture.md).
 데이터 소스/도구 벤치마크(글로벌): [docs/data-sources.md](docs/data-sources.md)(신뢰도 등급)·[docs/data-pulling.md](docs/data-pulling.md)(수집 도구).
 
-## 실행 (v0.1 — 무키, T1 SEC EDGAR)
+## 실행 (무키, T1 SEC EDGAR)
 ```sh
-python3 -m please_moon AAPL   # 미국 상장사 핵심 재무 사실 시트(출처 등급·면책)
+python3 -m please_moon AAPL            # 사실 시트(재무 T1 + 시세)
+python3 -m please_moon --report NVDA   # 전체 파이프라인: 사실 + Gemini 1차조사 드래프트
 ```
-키 불필요. 글로벌/US 우선, 한국은 보조.
+키 불필요(EDGAR/Yahoo). 글로벌/US 우선. 실증 산출물 예: [reports/NVDA.md](reports/NVDA.md). 버전: [CHANGELOG.md](CHANGELOG.md).
 
 ## 실증
 [docs/spacex-3way-comparison.md](docs/spacex-3way-comparison.md) — Claude단독 vs Gemini단독 vs clemini. 결론: **Gemini 단독은 시점민감 사실에 자신 있게 틀린다(SpaceX 2026 IPO 누락). clemini가 정답 구조.**
