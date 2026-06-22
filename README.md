@@ -15,5 +15,15 @@
 - **Gemini(agy)**: 넓은 조사 — 사업/밸류에이션 뼈대, 노출 경로, 촉매·리스크·시나리오. 싸고 빠름.
 - **Claude**: 시점민감 사실 라이브 검증·교정, 출처 신뢰도 판정, 최종 종합. (매수권유 금지선도 Claude가 지킴.)
 
+## 구조
+**데이터 수집 = 결정론적 코드 / 분석·종합 = clemini(LLM).** 설계: [docs/architecture.md](docs/architecture.md).
+데이터 소스/도구 벤치마크(글로벌): [docs/data-sources.md](docs/data-sources.md)(신뢰도 등급)·[docs/data-pulling.md](docs/data-pulling.md)(수집 도구).
+
+## 실행 (v0.1 — 무키, T1 SEC EDGAR)
+```sh
+python3 -m please_moon AAPL   # 미국 상장사 핵심 재무 사실 시트(출처 등급·면책)
+```
+키 불필요. 글로벌/US 우선, 한국은 보조.
+
 ## 실증
 [docs/spacex-3way-comparison.md](docs/spacex-3way-comparison.md) — Claude단독 vs Gemini단독 vs clemini. 결론: **Gemini 단독은 시점민감 사실에 자신 있게 틀린다(SpaceX 2026 IPO 누락). clemini가 정답 구조.**
