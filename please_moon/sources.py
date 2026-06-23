@@ -8,6 +8,8 @@
 from __future__ import annotations
 
 import json
+import os
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
 from enum import IntEnum
@@ -137,3 +139,76 @@ class SECEdgar:
                 f.label = label
                 out["facts"].append(f)
         return out
+
+
+# --- 키 기반 어댑터 (Gemini 병렬 프로토타입 → Claude 검토·적용, 260623) ---
+# 키 없으면 graceful(None) → 무키 EDGAR/Yahoo로 동작 유지. 키 발급 후 런타임 검증.
+
+class TwelveData:
+    """Twelve Data 시세 (키 필요, 글로벌 50+ 거래소). T2."""
+    name = "TwelveData"
+    tier = Tier.REPUTABLE
+
+    def latest_price(self, ticker: str) -> Optional[Fact]:
+        key = os.environ.get("TWELVEDATA_API_KEY")
+        if not key:
+            return None
+        try:
+            d = _get_json(f"https://api.twelvedata.com/quote?symbol={ticker}&apikey={key}")
+        except Exception:  # noqa: BLE001
+            return None
+        if "close" not in d:
+            return None
+        return Fact(label="Price", value=float(d["close"]), unit=d.get("currency", "USD"),
+                    period="latest", source=self.name, tier=self.tier, tag="twelvedata:close")
+
+
+class Finnhub:
+    """Finnhub 시세 (키 필요, 글로벌). 무료 60콜/분. T2."""
+    name = "Finnhub"
+    tier = Tier.REPUTABLE
+
+    def latest_price(self, ticker: str) -> Optional[Fact]:
+        key = os.environ.get("FINNHUB_API_KEY")
+        if not key:
+            return None
+        try:
+            d = _get_json(f"https://finnhub.io/api/v1/quote?symbol={ticker}&token={key}")
+        except Exception:  # noqa: BLE001
+            return None
+        c = d.get("c")
+        if not c:  # Finnhub은 미발견 시 0 반환
+            return None
+        return Fact(label="Price", value=float(c), unit="USD", period="latest",
+                    source=self.name, tier=self.tier, tag="finnhub:c")
+
+
+class Fred:
+    """FRED 거시지표 (키 필요). 연준 공식 시계열. T1."""
+    name = "FRED"
+    tier = Tier.OFFICIAL
+
+    def latest(self, series_id: str) -> Optional[Fact]:
+        key = os.environ.get("FRED_API_KEY")
+        if not key:
+            return None
+        url = ("https://api.stlouisfed.org/fred/series/observations"
+               f"?series_id={urllib.parse.quote(series_id)}"
+               f"&api_key={urllib.parse.quote(key)}"
+               "&file_type=json&sort_order=desc&limit=1")
+        try:
+            d = _get_json(url)
+        except Exception:  # noqa: BLE001
+            return None
+        obs = d.get("observations", [])
+        if not obs:
+            return None
+        v = obs[0].get("value")
+        if v in (None, "."):   # FRED 결측 sentinel
+            return None
+        try:
+            v = float(v)
+        except (ValueError, TypeError):
+            pass
+        return Fact(label=series_id, value=v, unit="", period=obs[0].get("date", ""),
+                    source=self.name, tier=self.tier, tag=f"fred:{series_id}")

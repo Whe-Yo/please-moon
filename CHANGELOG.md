@@ -3,7 +3,7 @@
 [Keep a Changelog] / [SemVer] 지향. 프로토타입이라 0.x.
 
 ## [Unreleased]
-- (다음 변경 누적)
+- **키 기반 어댑터 추가**: `TwelveData`·`Finnhub`(시세, T2)·`Fred`(거시, T1). clemini 병렬 팬아웃으로 3개 동시 프로토타입 → 격리 워크스페이스 → Claude 검토·적용. 무키 graceful(None) 검증, 회귀 없음. **런타임 검증은 키 발급 후.**
 
 ## [0.2.0] - 260622
 ### Added
